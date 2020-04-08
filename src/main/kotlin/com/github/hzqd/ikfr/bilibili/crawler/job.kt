@@ -15,18 +15,19 @@ fun main() = runBlocking {
 
     val job1 = async {
 
-        while (id < 7000) {
+        while (id < 500) {
             val doc = DocUtils("https://bangumi.bilibili.com/anime").getDoc(id++)
+
             if (doc.html().isEmpty()) continue
-            else if (doc.select(".info-title").text() == "") continue
+            else if (doc.select(".media-info-title-t").text() == "") continue
 
             val anim = Anim(
-                title = doc.select(".info-title").text(),
-                playCount = AnimUtils.toPlayCount(doc.select(".info-count-item-play em").text()),
-                episode = AnimUtils.toEpisode(doc.select(".info-update span")[1].text()),
+                title = doc.select(".media-info-title-t").text(),
+                playCount = AnimUtils.toPlayCount(doc.select(".media-info-count em").first().text()),
+                episode = AnimUtils.toEpisode(doc.select(".media-info-time span")[1].text()),
                 cover = doc.select(".bangumi-preview img").attr("src"),
-                fans = AnimUtils.toPlayCount(doc.select(".info-count-item-fans em").text()),
-                date = AnimUtils.toDate(doc.select(".info-update span")[0].text())
+                fans = AnimUtils.toPlayCount(doc.select(".media-info-count-item-fans em").text()),
+                date = AnimUtils.toDate(doc.select(".media-info-time span")[0].text())
             )
             println("$id: ${anim.title}")
 
@@ -42,7 +43,8 @@ fun main() = runBlocking {
     }
 
     val job2 = async {
-        val file = File("/Users/feint/bilibili.html")
+        println("Created")
+        val file = File("C:\\Users\\moeKiwiSAMA\\Desktop\\bilibili.html")
         if (!file.exists()) file.createNewFile()
         while (id < 7000) {
             if (top50List.size >= 50) {
